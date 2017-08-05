@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="default">
+
+    <gui fullscreen='0'>
+      <plugin name='keyboard' filename='libKeyboardGUIPlugin.so'/>
+      <camera name="user_camera">
+        <pose>107.81 -341.80 20 0 0.332 2.030003</pose>
+      </camera>
+    </gui>
+
+    <scene>
+      <sky></sky>
+    </scene>
+
+    <!-- A global light source -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <!-- A ground plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <include>
+      <uri>model://raceway</uri>
+      <pose>25.5593 -2.5 0 0 0 -0.89187</pose>
+    </include>
+    
+  </world>
+</sdf>

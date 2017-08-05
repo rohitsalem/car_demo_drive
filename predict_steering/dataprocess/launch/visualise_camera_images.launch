@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <node pkg="rosbag" type="play" name="rosbag_paly" output="screen" args="$(find dataset)/dataset.bag"/>
+
+  <!-- rviz -->
+  <arg name="rviz"    default="true" />
+  <arg name="rviz_file" default="$(find dataprocess)/config/display.rviz" />
+  <node pkg="rviz" type="rviz" name="rviz_config" args="-d $(arg rviz_file)" output="screen" if="$(arg rviz)"/>
+
+</launch>

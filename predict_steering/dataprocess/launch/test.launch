@@ -1,0 +1,4 @@
+
+<launch>
+  <node pkg ="dataprocess" name="messagefilternode" type="messagefilternode" output="screen" /> 
+</launch>

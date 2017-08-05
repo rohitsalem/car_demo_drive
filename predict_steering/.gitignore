@@ -1,0 +1,7 @@
+# Ignore VIM files
+.*.sw?
+*.png
+*.bag
+*.h5
+*.json
+*.tar.gz
