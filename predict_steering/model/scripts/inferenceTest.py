@@ -22,20 +22,20 @@ graph.append(tf.get_default_graph())
 
 
 
-image = cv2.imread('/home/rsalem/catkin_ws/src/priusCup/steering_predict/dataset/center/ocS2BqGJjH.png',-1)
+image = cv2.imread('../../dataset/center/nrNvB263NZ.png',-1)
 
-# cv2.imshow('image',image)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
+cv2.imshow('image',image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 
 image_array = np.asarray(image)
 
-image_array = processData.crop (image_array, 0.4, 0.2)
+image_array = processData.crop (image_array, 0.3, 0.27)
 
 image_array = processData.resize(image_array, new_dim=(64,64))
 
 transformed_image_array = image_array[None, :, :, :]
 
-steering_angle = float(model.predict(transformed_image_array, batch_size=10)) 
+steering_angle = float(model.predict(transformed_image_array, batch_size=1)) 
 
-print (steering_angle	)
+print (steering_angle)

@@ -1,5 +1,4 @@
 #!/usr/bin/python
-## Author: rohit
 ## Date: June, 29,2017
 # process the data into keras
 # most of this is taken from https://github.com/upul/Behavioral-Cloning/blob/master/helper.py
@@ -134,7 +133,7 @@ def randomRotation(image, steering_angle, rotation_amount=15):
     rad = (np.pi / 180.0) * angle
     return rotate(image, angle, reshape=False), steering_angle + (-1) * rad
 
-def processGenerateImageAngle(image, steering_angle, top_crop_percent=0.1, bottom_crop_percent=0.1,
+def processGenerateImageAngle(image, steering_angle, top_crop_percent=0.3, bottom_crop_percent=0.27,
                        resize_dim=(64, 64), do_shear_prob=0.5):
 
     """

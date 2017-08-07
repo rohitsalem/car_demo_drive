@@ -28,6 +28,9 @@
 
 #include <prius_msgs/Control.h>
 #include <prius_msgs/SteeringAngle.h>
+#include "ros/callback_queue.h"
+#include "ros/subscribe_options.h"
+#include "std_msgs/Float32.h"
 
 namespace gazebo
 {
@@ -104,6 +107,14 @@ namespace gazebo
     /// state of the vehicle.
     /// \return 1.0 if FORWARD, -1.0 if REVERSE, 0.0 otherwise
     private: double GasTorqueMultiplier();
+
+    /// \brief Handle an incoming message from ROS
+    public: void OnRosSteerCmd(const std_msgs::Float32ConstPtr &_msg);
+    // public: void OnRosMsg(const geometry_msgs::TwistConstPtr &_msg);
+
+    /// \brief PriusHybridPlugin::QueueThread
+    /// \brief ROS helper function that processes messages
+    public: void QueueThread();
 
     /// \brief Private data
     private: std::unique_ptr<PriusHybridPluginPrivate> dataPtr;

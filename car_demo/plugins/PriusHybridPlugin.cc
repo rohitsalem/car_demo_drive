@@ -289,6 +289,7 @@ namespace gazebo
 
     /// \brief Publisher for the world_control topic.
     public: transport::PublisherPtr worldControlPub;
+
     public: ros::NodeHandle nh;
 
     public: ros::Subscriber controlSub;
@@ -296,6 +297,16 @@ namespace gazebo
 	  public: ros::Publisher  steeranglePub;
     
     public: prius_msgs::SteeringAngle steering_angle;
+
+     /// \brief A ROS callbackqueue that helps process messages
+    public: ros::CallbackQueue rosQueue;
+
+    /// \brief A thread the keeps running the rosQueue
+    public: std::thread rosQueueThread;
+
+    // \brief A ROS subscriber
+    public: ros::Subscriber rosSub;
+
   };
 }
 
@@ -679,6 +690,35 @@ void PriusHybridPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   this->dataPtr->node.Subscribe("/keypress", &PriusHybridPlugin::OnKeyPressIgn,
       this);
    
+  ros::SubscribeOptions so=
+            ros::SubscribeOptions::create<std_msgs::Float32>(
+                "/steering_command",
+                1,
+                boost::bind(&PriusHybridPlugin::OnRosSteerCmd, this, _1),
+                ros::VoidPtr(), &this->dataPtr->rosQueue);
+  this->dataPtr->rosSub=this->dataPtr->nh.subscribe(so);
+
+  this->dataPtr->rosQueueThread= std::thread(std::bind (&PriusHybridPlugin::QueueThread,this));
+
+   
+}
+
+void PriusHybridPlugin::OnRosSteerCmd(const std_msgs::Float32ConstPtr &_msg)
+{
+  std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
+  this->dataPtr->handWheelCmd=_msg->data;
+  this->dataPtr->lastSteeringCmdTime = this->dataPtr->world->SimTime();
+}
+/////////////////////////////////////////////////
+/// \brief PriusHybridPlugin::QueueThread
+/// \brief ROS helper function that processes messages
+void PriusHybridPlugin::QueueThread()
+{
+    static const double timeout =0.01;
+    while(this->dataPtr->nh.ok())
+    {
+        this->dataPtr->rosQueue.callAvailable(ros::WallDuration(timeout));
+    }
 }
 
 /////////////////////////////////////////////////

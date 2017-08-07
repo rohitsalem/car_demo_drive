@@ -36,11 +36,11 @@ prev_image_array=None
 class drive:
 
 	def __init__(self):
-		self.pub = rospy.Publisher("steering_command", Float32, queue_size = 10)
+		self.pub = rospy.Publisher("steering_command", Float32, queue_size = 1)
 
 		self.bridge = CvBridge()
 
-		self.sub = rospy.Subscriber("/prius/camera/center/image_raw", Image, self.callback)
+		self.sub = rospy.Subscriber("/prius/front_camera/image_raw", Image, self.callback)
 
 		# self.json_file = open('model.json', 'r')
 		
@@ -74,14 +74,15 @@ class drive:
 
 		image_array = np.asarray(cv_image)
 
-		image_array = processData.crop (image_array, 0.35, 0.1)
+		image_array = processData.crop (image_array, 0.3, 0.27)
 
 		image_array = processData.resize(image_array, new_dim=(64,64))
 
 		transformed_image_array = image_array[None, :, :, :]
 
 		with self.graph[0].as_default():
-			steering_angle = float(self.model.predict(transformed_image_array, batch_size=1))
+			steering_angle = (float(self.model.predict(transformed_image_array, batch_size=1)))*1+1
+			print (steering_angle)
 			self.pub.publish(steering_angle)
 
 

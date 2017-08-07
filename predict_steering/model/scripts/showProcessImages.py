@@ -37,7 +37,7 @@ plt.savefig('shear.png')
 plt.show(block=True)
 
 # crop image
-image = processData.crop(img, 0.4, 0.25)
+imagecr = processData.crop(img, 0.3, 0.27)
 plt.imshow(image)
 plt.title("crop")
 plt.savefig('crop.png')
@@ -58,7 +58,7 @@ plt.show(block=True)
 # plt.show(block=True)
 
 # resize
-image = processData.resize(img, (64,64))
+image = processData.resize(imagecr, (64,64))
 plt.imshow(image)
 plt.title("resize")
 plt.savefig('resize.png')
@@ -72,7 +72,7 @@ plt.savefig('shear1.png')
 plt.show(block=True)
 
 # crop image
-image = processData.crop(image, 0.4, 0.3)
+imagecrr = processData.crop(image, 0.3, 0.27)
 plt.imshow(image)
 plt.title("crop2")
 plt.savefig('crop2.png')
@@ -93,7 +93,7 @@ plt.show(block=True)
 # plt.show(block=True)
 
 # resize
-image = processData.resize(image, (64,64))
+image = processData.resize(imagecrr, (64,64))
 plt.imshow(image)
 plt.title("resize5")
 plt.savefig('resize5.png')
