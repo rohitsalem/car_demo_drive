@@ -13,7 +13,7 @@ import os
 input_shape = (64, 64, 3)
 data_dir = "/home/rohit/indigo_ws/src/car/predict_steering/dataset/center"
 csv_dir= "/home/rohit/indigo_ws/src/car/predict_steering/dataset/yaml_files"
-data_df = pd.read_csv(os.path.join(csv_dir, 'data.csv'))
+data_df = pd.read_csv(os.path.join(csv_dir, 'data2.csv'))
 X = data_df['center'].values
 y = data_df['steering'].values
 X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.2, random_state=10)
@@ -37,8 +37,8 @@ model.summary()
 model.compile(loss='mean_squared_error', optimizer=Adam(lr=1e-4))
 history = model.fit_generator(generator=data_iterator(data_dir, X_train, y_train, 64, True),
                     steps_per_epoch=800,
-                    epochs=10,
-                    max_q_size=10,
+                    epochs=5,
+                    max_queue_size=10,
                     validation_data=data_iterator(data_dir, X_valid, y_valid, 64, False),
                     validation_steps=50,
                     verbose=1)

@@ -14,7 +14,7 @@ import json
 
 import processData
 
-number_of_epochs = 5
+number_of_epochs = 10
 number_of_steps_per_epoch =2500
 number_of_validation_steps = 550
 learning_rate = 1e-4

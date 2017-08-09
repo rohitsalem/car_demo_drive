@@ -2,6 +2,5 @@
 .*.sw?
 *.png
 *.bag
-*.h5
-*.json
 *.tar.gz
+*.pyc

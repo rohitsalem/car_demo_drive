@@ -13,7 +13,7 @@ from scipy.ndimage import rotate
 from scipy.stats import bernoulli
 
 # Some useful constants paths for csv and images
-dataPath = '../../dataset/yaml_files/data.csv'
+dataPath = '../../dataset/yaml_files/data2.csv'
 imPath = '../../dataset/center/'
 
 # constant added for better training, as most of the time steering is 0
@@ -180,16 +180,31 @@ def fetchImages(batch_size=128):
     :return:
         An list of selected (image files names, respective steering angles)
     """
+    thresh_prob=0.2
+    thresh = 0
     data = pd.read_csv(dataPath)
     num_of_img = len(data)
     rnd_indices = np.random.randint(0, num_of_img, batch_size)
     image_files_and_angles = []
 
-    for index in rnd_indices:
-        img = data.iloc[index]['center'].strip()
+    # for index in rnd_indices:
+    #     img = data.iloc[index]['center'].strip()
+    #     angle = data.iloc[index]['steering']
+    #     image_files_and_angles.append((img, angle))
+
+    count=0    
+    while(count<batch_size):
+        index=np.random.randint(0,num_of_img)
+        img = str(data.iloc[index]['center']).strip()
         angle = data.iloc[index]['steering']
-        image_files_and_angles.append((img, angle))
-        
+        if ( angle ==thresh ):
+            if(bernoulli.rvs(thresh_prob)):
+                image_files_and_angles.append((img,angle))
+                count=count+1
+        else:
+            image_files_and_angles.append((img,angle))
+            count=count+1
+
     return image_files_and_angles
 
 
@@ -209,7 +224,7 @@ def genBatch(batch_size=128):
         images = fetchImages(batch_size)
         for img_file, angle in images:
             raw_image = plt.imread(imPath + img_file)
-            raw_angle = angle
+            raw_angle = float(angle)
             new_image, new_angle = processGenerateImageAngle(raw_image, raw_angle)
             X_batch.append(new_image)
             y_batch.append(new_angle)
