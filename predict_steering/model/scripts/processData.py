@@ -11,6 +11,7 @@ import pandas as pd
 import scipy.misc
 from scipy.ndimage import rotate
 from scipy.stats import bernoulli
+import math
 
 # Some useful constants paths for csv and images
 dataPath = '../../dataset/yaml_files/data2.csv'
@@ -232,3 +233,9 @@ def genBatch(batch_size=128):
         assert len(X_batch) == batch_size, 'len(X_batch) == batch_size should be True'
 
         yield np.array(X_batch), np.array(y_batch)
+
+def crop_resize_image(img):
+    shape = img.shape
+    # img = img[math.floor(shape[0]/5):shape[0]-25, 0:shape[1]]
+    img = cv2.resize(img, (64,64), interpolation=cv2.INTER_AREA)    
+    return img

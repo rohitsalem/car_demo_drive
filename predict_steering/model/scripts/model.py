@@ -4,13 +4,16 @@
 ## Model for training
 
 from __future__ import print_function
-
-from keras.models import Sequential
+from keras.preprocessing.image import *
+from keras.models import Sequential ,Model
 from keras.layers import Dense, Lambda, Dropout, Activation, Flatten, SpatialDropout2D
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
 from keras.optimizers import Adam
 from keras import initializers
+import matplotlib.pyplot as plt
+import numpy as np 
 import json
+import math
 
 import processData
 
@@ -70,14 +73,14 @@ model.summary()
 model.compile(optimizer=Adam(learning_rate), loss="mse")
 
 #Saving the model architecture
-# model_json = model.to_json()
-# with open("model.json", "w") as outfile:
-# 	outfile.write(model_json)
+model_json = model.to_json()
+with open("model.json", "w") as outfile:
+	outfile.write(model_json)
 
 # Load the pre-trained weights
-# model.load_weights('weights.h5')
+model.load_weights('weights.h5')
 
-# print ("Loaded the pre trained weights")
+print ("Loaded the pre trained weights")
 
 
 # create two generators for training and validation
@@ -91,13 +94,40 @@ history = model.fit_generator(trainGen,
                               verbose=1,
                               validation_data=valGen,
                              validation_steps=number_of_validation_steps)
-# 
-# score = model.evaluate_generator(evalGen, 1000, max_q_size=10)
-# print('Test score:', score[0])
-# print('Test accuracy:', score[1])
+# # 
+# # score = model.evaluate_generator(evalGen, 1000, max_q_size=10)
+# # print('Test score:', score[0])
+# # print('Test accuracy:', score[1])
 
-# save the weights
+# # save the weights
 model.save_weights('weights.h5')
 
-#save the model with weights
+# #save the model with weights
 model.save('model.h5')
+
+# test_img= '../../dataset/center/QvnkdWI64B.png'
+# def visualize_layer(layer_name):
+# 	modeli=Model(input=model.input, output=model.get_layer(layer_name).output)
+
+# 	img= load_img(test_img)
+# 	# img=processData.crop(img,0.3,0.27)
+# 	# img=processData.resize(img,(64,64))
+# 	# im=np.asarray(img)
+# 	img=processData.crop_resize_image(img_to_array(img))
+# 	# img=np.asarray(img)
+# 	img=np.expand_dims(img,axis=0)
+
+# 	print(img.shape)
+
+# 	conv_features=modeli.predict(img)
+# 	print("conv features shape:", conv_features.shape)
+
+
+# 	plt.subplots(figsize=(5,5))
+# 	for i in range(16):
+# 		plt.subplot(4,4,i+1)
+# 		plt.axis('off')
+# 		plt.imshow(conv_features[0,:,:,i],cmap='gray')
+# 	plt.show()
+
+# visualize_layer('conv2d_3')
