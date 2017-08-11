@@ -20,6 +20,9 @@ imPath = '../../dataset/center/'
 # constant added for better training, as most of the time steering is 0
 # STEERING_CONSTANT = 0.229
 
+seed=7
+np.random.seed(seed)
+
 # locations of the data in the csv file
 steering=1
 center=0
