@@ -5,7 +5,7 @@
 
 from __future__ import print_function
 from keras.preprocessing.image import *
-from keras.models import Sequential ,Model
+from keras.models import Sequential ,Model, load_model
 from keras.layers import Dense, Lambda, Dropout, Activation, Flatten, SpatialDropout2D
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
 from keras.optimizers import Adam
@@ -17,7 +17,7 @@ import math
 
 import processData
 
-number_of_epochs = 17
+number_of_epochs = 5
 number_of_steps_per_epoch =2500
 number_of_validation_steps = 550
 learning_rate = 1e-4
@@ -31,7 +31,7 @@ model = Sequential()
 model.add(Lambda(lambda x: x / 127.5 - 1.0,  input_shape=(64, 64, 3)))
 
 # starts with five convolutional and maxpooling layers
-model.add(Convolution2D(24, 5, 5, border_mode='same', subsample=(2, 2), kernel_initializer='glorot_normal'))
+model.add(Convolution2D(24, 5, 5, border_mode='same', subsample=(2, 2)))
 model.add(Activation(activation_relu))
 model.add(MaxPooling2D(pool_size=(2, 2), strides=(1, 1)))
 
@@ -79,7 +79,7 @@ with open("model.json", "w") as outfile:
 
 # Load the pre-trained weights
 model.load_weights('weights.h5')
-
+#model=load_model('model.h5')
 print ("Loaded the pre trained weights")
 
 
