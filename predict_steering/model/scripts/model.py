@@ -10,6 +10,7 @@ from keras.layers import Dense, Lambda, Dropout, Activation, Flatten, SpatialDro
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
 from keras.optimizers import Adam
 from keras import initializers
+from keras.callbacks import ModelCheckpoint
 import matplotlib.pyplot as plt
 import numpy as np 
 import json
@@ -17,9 +18,9 @@ import math
 
 import processData
 
-number_of_epochs = 5
+number_of_epochs =40
 number_of_steps_per_epoch =2500
-number_of_validation_steps = 550
+number_of_validation_steps = 500
 learning_rate = 1e-4
 
 activation_relu = 'relu'
@@ -73,9 +74,9 @@ model.summary()
 model.compile(optimizer=Adam(learning_rate), loss="mse")
 
 #Saving the model architecture
-model_json = model.to_json()
-with open("model.json", "w") as outfile:
-	outfile.write(model_json)
+#model_json = model.to_json()
+#with open("model.json", "w") as outfile:
+#	outfile.write(model_json)
 
 # Load the pre-trained weights
 model.load_weights('weights.h5')
@@ -88,15 +89,19 @@ trainGen = processData.genBatch()
 valGen = processData.genBatch()
 evalGen = processData.genBatch()
 
+filepath = "model_checkpoint.h5"
+checkpoint = ModelCheckpoint(filepath, monitor="loss", verbose=1, save_best_only=True, mode='min')
+callbacks_list = [checkpoint]
 history = model.fit_generator(trainGen,
                               steps_per_epoch=number_of_steps_per_epoch,
                               epochs=number_of_epochs,
                               verbose=1,
                               validation_data=valGen,
+                              callbacks=callbacks_list,
                              validation_steps=number_of_validation_steps)
-# # 
-# # score = model.evaluate_generator(evalGen, 1000, max_q_size=10)
-# # print('Test score:', score[0])
+# #
+score = model.evaluate_generator(evalGen, 2, max_queue_size=10)
+print('Test score:', score)
 # # print('Test accuracy:', score[1])
 
 # # save the weights
