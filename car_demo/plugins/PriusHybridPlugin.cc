@@ -705,9 +705,9 @@ void PriusHybridPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
 void PriusHybridPlugin::OnRosSteerCmd(const std_msgs::Float32ConstPtr &_msg)
 {
+  this->dataPtr->lastSteeringCmdTime = this->dataPtr->world->SimTime();
   std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
   this->dataPtr->handWheelCmd=_msg->data;
-  this->dataPtr->lastSteeringCmdTime = this->dataPtr->world->SimTime();
 }
 /////////////////////////////////////////////////
 /// \brief PriusHybridPlugin::QueueThread
@@ -1067,7 +1067,7 @@ void PriusHybridPlugin::Update()
   //PID for the constant vel
   double velocityError= actualvelocity -desiredvelocity;
 
-  this->dataPtr->gasPedalPercent=this->dataPtr->cruizepPID.Update(velocityError,dt);
+  // this->dataPtr->gasPedalPercent=this->dataPtr->cruizepPID.Update(velocityError,dt);
 
   // std::cout<<" Velocity : " << actualvelocity << std::endl;
 

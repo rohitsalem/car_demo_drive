@@ -19,10 +19,13 @@ import rospy
 from prius_msgs.msg import Control
 from sensor_msgs.msg import Joy
 
+#for g920 wheel
+# STEERING_AXIS = 0
+# THROTTLE_AXIS = 1
+# BRAKE_AXIS = 3
 
 STEERING_AXIS = 0
-THROTTLE_AXIS = 1
-BRAKE_AXIS = 3
+THROTTLE_AXIS = 4
 
 
 class Translator:
@@ -44,18 +47,36 @@ class Translator:
         if message.axes[THROTTLE_AXIS] >= 0:
             command.throttle = message.axes[THROTTLE_AXIS]
             command.brake = 0.0
-        if message.axes[BRAKE_AXIS] >=0:
-            command.brake = message.axes[BRAKE_AXIS] 
+        else:
+            command.brake = message.axes[THROTTLE_AXIS] * -1
             command.throttle = 0.0
 
-        if message.buttons[4]:
+
+        if message.buttons[3]:
             command.shift_gears = Control.FORWARD
-        elif message.buttons[5]:
+        elif message.buttons[1]:
             command.shift_gears = Control.NEUTRAL
-        elif message.buttons[8]:
+        elif message.buttons[0]:
             command.shift_gears = Control.REVERSE
         else:
             command.shift_gears = Control.NO_COMMAND
+
+        # if message.axes[THROTTLE_AXIS] >= 0:
+        #     command.throttle = message.axes[THROTTLE_AXIS]
+        #     command.brake = 0.0
+        # if message.axes[BRAKE_AXIS] >=0:
+        #     command.brake = message.axes[BRAKE_AXIS] 
+        #     command.throttle = 0.0
+
+        #for g920 wheel
+        # if message.buttons[4]:
+        #     command.shift_gears = Control.FORWARD
+        # elif message.buttons[5]:
+        #     command.shift_gears = Control.NEUTRAL
+        # elif message.buttons[8]:
+        #     command.shift_gears = Control.REVERSE
+        # else:
+        #     command.shift_gears = Control.NO_COMMAND
 
         command.steer = message.axes[STEERING_AXIS]
         self.last_published = message
