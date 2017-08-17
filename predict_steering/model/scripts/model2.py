@@ -8,12 +8,14 @@ from keras.layers import Lambda, Convolution2D, MaxPooling2D, Dropout, Dense, Fl
 from keras.optimizers import Adam
 
 import os
+import sys
 
 # Prepare datasets
 input_shape = (64, 64, 3)
-data_dir = "/home/rohit/indigo_ws/src/car/predict_steering/dataset/center"
-csv_dir= "/home/rohit/indigo_ws/src/car/predict_steering/dataset/yaml_files"
-data_df = pd.read_csv(os.path.join(csv_dir, 'data2.csv'))
+# print(os.path.dirname(sys.path[0]))
+data_dir = "/home/rsalem/catkin_ws/src/car/predict_steering/dataset/center"
+csv_dir= "/home/rsalem/catkin_ws/src/car/predict_steering/dataset/yaml_files"
+data_df = pd.read_csv(os.path.join(csv_dir, 'data_new.csv'))
 X = data_df['center'].values
 y = data_df['steering'].values
 X_train, X_valid, y_train, y_valid = train_test_split(X, y, test_size=0.2, random_state=10)

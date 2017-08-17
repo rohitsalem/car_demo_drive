@@ -14,14 +14,11 @@ from scipy.stats import bernoulli
 import math
 
 # Some useful constants paths for csv and images
-dataPath = '../../dataset/yaml_files/data2.csv'
+dataPath = '../../dataset/yaml_files/data_new.csv'
+testPath = '../../dataset/yaml_files/test_new.csv'
 imPath = '../../dataset/center/'
 
-# constant added for better training, as most of the time steering is 0
-# STEERING_CONSTANT = 0.229
-
-seed=7
-np.random.seed(seed)
+np.random.seed()
 
 # locations of the data in the csv file
 steering=1
@@ -125,6 +122,12 @@ def randomShear(image, steering_angle, shear_range=200):
 
     return image, steering_angle
 
+def random_brightness(image):
+    image1 = cv2.cvtColor(image,cv2.COLOR_RGB2HSV)
+    random_bright = 0.8 + 0.4*(2*np.random.uniform()-1.0)    
+    image1[:,:,2] = image1[:,:,2]*random_bright
+    image1 = cv2.cvtColor(image1,cv2.COLOR_HSV2RGB)
+    return image1
 
 def randomRotation(image, steering_angle, rotation_amount=15):
     """
@@ -138,7 +141,7 @@ def randomRotation(image, steering_angle, rotation_amount=15):
     return rotate(image, angle, reshape=False), steering_angle + (-1) * rad
 
 def processGenerateImageAngle(image, steering_angle, top_crop_percent=0.3, bottom_crop_percent=0.27,
-                       resize_dim=(64, 64), do_shear_prob=0.5):
+                       resize_dim=(64, 64)):
 
     """
     Applies all the image procssing and returns the steering angle with the image
@@ -155,8 +158,8 @@ def processGenerateImageAngle(image, steering_angle, top_crop_percent=0.3, botto
 
 
     # shear image
-    if(bernoulli.rvs(do_shear_prob)):
-        image, steering_angle = randomShear(image, steering_angle)
+    # if(bernoulli.rvs(do_shear_prob)):
+    #     image, steering_angle = randomShear(image, steering_angle)
 
     # crop image
     image = crop(image, top_crop_percent, bottom_crop_percent)
@@ -184,11 +187,13 @@ def fetchImages(batch_size=128):
     :return:
         An list of selected (image files names, respective steering angles)
     """
-    thresh_prob=0.2
-    thresh = 0
+    thresh_prob=0.3
+    thresh = 0.001
     data = pd.read_csv(dataPath)
+    # data = pd.read_csv(testPath)
     num_of_img = len(data)
     rnd_indices = np.random.randint(0, num_of_img, batch_size)
+    # print (rnd_indices)
     image_files_and_angles = []
 
     # for index in rnd_indices:
@@ -196,15 +201,25 @@ def fetchImages(batch_size=128):
     #     angle = data.iloc[index]['steering']
     #     image_files_and_angles.append((img, angle))
 
-    count=0    
+    count=0
+    # i=0    
+    # zeros=0
     while(count<batch_size):
+        # i=i+1
         index=np.random.randint(0,num_of_img)
+        # print(index)
+        # print ("Value i, %d" %i)
+        # print ("Count %d" %count)
         img = str(data.iloc[index]['center']).strip()
         angle = data.iloc[index]['steering']
-        if ( angle ==thresh ):
+        if ( -thresh< angle <thresh ):
+            # print ("inside thresh check")
             if(bernoulli.rvs(thresh_prob)):
                 image_files_and_angles.append((img,angle))
                 count=count+1
+                # zeros = zeros+1
+                # print ("zeros %d" %zeros)
+
         else:
             image_files_and_angles.append((img,angle))
             count=count+1

@@ -55,7 +55,7 @@ class drive:
 		# print ("model compiled")
 
 		self.f = h5py.File('model.h5' , mode ='r')
-		self.model = load_model ('model.h5')
+		self.model = load_model ('model_new_stepsize.h5')
 		print (" ######### Loaded Model #########")
 
 		self.graph = []
@@ -81,7 +81,7 @@ class drive:
 		transformed_image_array = image_array[None, :, :, :]
 
 		with self.graph[0].as_default():
-			steering_angle = (float(self.model.predict(transformed_image_array, batch_size=1)))*1+1
+			steering_angle = (float(self.model.predict(transformed_image_array, batch_size=1)))
 			print (steering_angle)
 			self.pub.publish(steering_angle)
 
