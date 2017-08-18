@@ -1063,11 +1063,11 @@ void PriusHybridPlugin::Update()
 
   this->dataPtr->lastSimTime = curTime;
 
-  double desiredvelocity=7;
+  double desiredvelocity=8;
   //PID for the constant vel
   double velocityError= actualvelocity -desiredvelocity;
 
-  // this->dataPtr->gasPedalPercent=this->dataPtr->cruizepPID.Update(velocityError,dt);
+  this->dataPtr->gasPedalPercent=this->dataPtr->cruizepPID.Update(velocityError,dt);
 
   // std::cout<<" Velocity : " << actualvelocity << std::endl;
 
