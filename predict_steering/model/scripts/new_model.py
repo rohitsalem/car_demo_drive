@@ -13,6 +13,7 @@ from keras.layers.convolutional import Convolution2D, Cropping2D
 from keras.models import Sequential, Model, load_model, model_from_json
 from keras.optimizers import Adam
 from keras.regularizers import l2
+from keras.callbacks import ModelCheckpoint 
 
 dataPath =  "../../dataset/yaml_files/data_new.csv"
 
@@ -59,7 +60,7 @@ def get_model():
 		])
 
 	model.compile(optimizer=Adam(0.00001), loss='mse')
-	model.load_weights('new_model.h5')
+	model.load_weights('new_model2.h5')
 	return model
 
 
@@ -68,24 +69,29 @@ if __name__=="__main__":
 
 	X_train,y_train = processimage.get_csv_data(dataPath)
 	X_train, y_train = shuffle(X_train,y_train, random_state=14)
-	X_train, X_validation, y_train, y_validation = train_test_split(X_train, y_train, test_size=0.1, random_state=14)
+	X_train, X_validation, y_train, y_validation = train_test_split(X_train, y_train, test_size=0.3, random_state=14)
 
 	model = get_model()
 	model.summary()
-
-	model.fit_generator(processimage.generate_batch(X_train, y_train), steps_per_epoch=240, 
-    					epochs=5,
+	filepath = "new_model_checkpoint.h5"
+	checkpoint = ModelCheckpoint(filepath, monitor = "loss", verbose=1, save_best_only=True, mode='min')
+	callbacks_list = [checkpoint]
+	model.fit_generator(processimage.generate_batch(X_train, y_train), steps_per_epoch=200, 
+    					epochs=20,
     					verbose=1,
     					validation_data=processimage.generate_batch(X_validation, y_validation), 
-    					validation_steps=4)
+    					validation_steps=20,
+    					callbacks = callbacks_list)
 
 	print ('Saving model weights and configuration file')
 
-	model.save_weights('new_model2.h5')
+	model.save_weights('new_model.h5')
     # Save model architecture as json file
-	with open('new_model2.json', 'w') as outfile:
+	with open('new_model.json', 'w') as outfile:
 		json.dump(model.to_json(), outfile)
 
+	with open('new_model_checkpoint.json', 'w') as outfile:
+		json.dump(model.to_json(), outfile)
     # Explicitly end tensorflow session
 	from keras import backend as K 
 
