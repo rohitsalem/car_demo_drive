@@ -1,17 +1,13 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="model" default="$(find prius_description)/urdf/prius.urdf"/>
-  <arg name="rvizconfig" default="$(find car_demo)/rviz/demo2.rviz" />
+  <arg name="rvizconfig" default="$(find car_demo)/rviz/demo_tf_detect.rviz" />
 
   <param name="robot_description" textfile="$(arg model)"/>
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="verbose" value="true"/>
-    <!-- <arg name="paused" value="true"/> -->
     <arg name="world_name" value="$(find car_demo)/worlds/raceway.world"/>
-
-    <!-- <arg name="world_name" value="$(find car_demo)/worlds/mcity.world"/> -->
-
   </include>
 
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" >
@@ -25,12 +21,12 @@
   <node pkg="car_demo" type="joystick_translator" name="joystick_translator"/>
 
   <!-- Run two joy nodes publishing to the same topic, just to cover two possible joystick locations -->
- <!--  <node pkg="joy" type="joy_node" name="joy_node0">
-    <param name="dev" value="/dev/input/by-id/usb-Logitech_G920_Driving_Force_Racing_Wheel_for_Xbox_One_00004ec005783d48-joystick"/>
-  </node> -->
-  <!-- <node pkg="joy" type="joy_node" name="joy_node1">
-    <param name="dev" value="/dev/input/js1"/>
-  </node> -->
+  <!-- <node pkg="joy" type="joy_node" name="joy_node0"> -->
+    <!-- <param name="dev" value="/dev/input/by-id/usb-Logitech_G920_Driving_Force_Racing_Wheel_for_Xbox_One_00004ec005783d48-joystick"/> -->
+  <!-- </node> -->
+  <!-- <node pkg="joy" type="joy_node" name="joy_node1"> -->
+    <!-- <param name="dev" value="/dev/input/js1"/> -->
+  <!-- </node> -->
   <node pkg="joy" type="joy_node" name="joy_node2">
     <param name="dev" value="/dev/input/js0"/>
   </node>
@@ -38,9 +34,7 @@
 
   <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -x 94.38 -y -309.710 -z 7.5 -R 0 -P 0 -Y 1.579425 -model prius"/>
 
-  <!-- <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -x 3 -y -12 -z 0.5 -model prius"/> -->
-
- <!--  <node name="messagefilternode" pkg="$(find dataprocess)" type="messagefilter"  /> -->
-
+  <node name= "detect_ros" pkg="tf_object_detect" type="detect_ros.py" output="screen"/>
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
+  
 </launch>
