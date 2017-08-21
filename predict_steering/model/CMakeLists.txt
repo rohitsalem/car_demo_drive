@@ -4,7 +4,13 @@ project(model)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED
+   cv_bridge
+   rospy
+   sensor_msgs
+   std_msgs
+   car_demo
+)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -101,7 +107,8 @@ catkin_package(
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
 )
-
+catkin_install_python(PROGRAMS scripts/new_drive.py 
+			DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 ###########
 ## Build ##
 ###########

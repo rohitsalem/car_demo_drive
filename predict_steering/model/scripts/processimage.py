@@ -88,9 +88,9 @@ def generate_batch(X_train, y_train, batch_size=BatchSize):
 			raw_image = cv2.imread(imPath+image_file)
 			raw_angle = float(angle)
 			image = process_image(raw_image)
-			# if random.randrange(2)==1:
-			# 	image = cv2.flip(image,1)
-			# 	raw_angle = -raw_angle
+			if random.randrange(4)==1:
+				image = cv2.flip(image,1)
+				raw_angle = -raw_angle
 			X_batch.append(image)
 			y_batch.append(raw_angle)
 
@@ -113,32 +113,3 @@ def generate_batch(X_train, y_train, batch_size=BatchSize):
 # 	cv2.destroyAllWindows()
 
 	
-# def generate_batch(X_train, y_train, batch_size=10):
-# 	print "generate batch"
-# 	images = np.zeros((batch_size,66,200,3), dtype=np.float32)
-# 	angles = np.zeros((batch_size,), dtype=np.float32)
-# 	while True:
-# 		straight_count = 0
-# 		for i in range(batch_size):
-# 			image_index = np.random.randint(0,len(X_train))
-# 			angle = y_train[image_index]
-# 			# Limit angles of less than absolute value of .1 to no more than 1/2 of data
-# 			# to reduce bias of car driving straight
-# 			if abs(angle) < .01:
-# 			    straight_count += 1
-# 			if straight_count > (batch_size * .5):
-# 			    while abs(y_train[image_index]) < .1:
-# 			        sample_index = random.randrange(len(X_train))
-# 			# Read image in from directory, process, and convert to numpy array
-# 			image = cv2.imread(imPath + str(X_train[image_index]))
-# 			image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-# 			image = process_image(image)
-# 			image = np.array(image, dtype=np.float32)
-# 			# Flip image and apply opposite angle 50% of the time
-# 			if random.randrange(2) == 1:
-# 			    image = cv2.flip(image, 1)
-# 			    angle = -angle
-# 			images[i] = image
-# 			angles[i] = angle
-# 			print  i 
-# 	yield images, angles
