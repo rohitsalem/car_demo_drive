@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+  <include file = "$(find car_demo)/launch/demo.launch"/>
+  <!-- <node name = "messagefilter_c_node" pkg = "dataprocess" type="messagefilter_c_node" output="screen" /> -->
+  <node name = "messagefilter_lcr_node" pkg = "dataprocess" type="messagefilter_lcr_node" output="screen" />
+</launch>
+  
