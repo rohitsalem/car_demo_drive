@@ -80,14 +80,10 @@ def main():
     img_format = 'png'
 
     STEERING_TOPIC="/filtered/steering_angle"
-    CAMERA_TOPICS="/filtered/image_raw"
+    CAMERA_TOPICS="/filtered/center/image_raw"
 
     filter_topics = [STEERING_TOPIC , CAMERA_TOPICS]
-    # if include_images:
-    #     filter_topics += CAMERA_TOPICS
-    # if include_others:
-    #     filter_topics += OTHER_TOPICS
-    # print (filter_topics)
+    
 
     bagsets = find_bagsets(data_dir, filter_topics=filter_topics)
     for bs in bagsets:
