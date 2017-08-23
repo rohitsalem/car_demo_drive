@@ -31,7 +31,7 @@ def write_image(bridge, outdir, msg, fmt='png'):
     random_name = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(10)])
     image_filename = os.path.join(outdir, str(random_name) + '.' + fmt)
     # image_filename = os.path.join(outdir, str(msg.header.stamp.to_nsec()) + '.' + fmt)
-    
+
 
     try:
         if hasattr(msg, 'format') and 'compressed' in msg.format:
@@ -135,8 +135,10 @@ def main():
                     print("%s_camera %d" % (topic[1],timestamp))
 
                 results = write_image(bridge, outdir, msg, fmt=img_format)
+                head,tail = os.path.split(results['filename'])
+                results['filename']=tail
                 # results['filename'] = os.path.relpath(results['filename'], yaml_outdir)
-                camera2dict(msg, results, camera_dict_right)
+                camera2dict(msg, results, camera_dict_left)
                 stats['img_count'] += 1
                 # stats['msg_count'] += 1
             if  (topic == CENTER_IMAGE_TOPIC):
@@ -145,6 +147,8 @@ def main():
                     print("%s_camera %d" % (topic[1],timestamp))
 
                 results = write_image(bridge, outdir, msg, fmt=img_format)
+                head,tail = os.path.split(results['filename'])
+                results['filename']=tail
                 # results['filename'] = os.path.relpath(results['filename'], yaml_outdir)
                 camera2dict(msg, results, camera_dict_center)
                 stats['img_count'] += 1
@@ -156,6 +160,8 @@ def main():
                     print("%s_camera %d" % (topic[1],timestamp))
 
                 results = write_image(bridge, outdir, msg, fmt=img_format)
+                head,tail = os.path.split(results['filename'])
+                results['filename']=tail
                 # results['filename'] = os.path.relpath(results['filename'], yaml_outdir)
                 camera2dict(msg, results, camera_dict_right)
                 stats['img_count'] += 1
