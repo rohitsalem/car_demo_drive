@@ -18,7 +18,7 @@ import rospkg
 from bagutils import *
 import random 
 import string
-
+import csv
 
 def get_outdir(base_dir, name):
     outdir = os.path.join(base_dir, name)

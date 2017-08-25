@@ -25,9 +25,9 @@
   <node pkg="car_demo" type="joystick_translator" name="joystick_translator"/>
 
   <!-- Run two joy nodes publishing to the same topic, just to cover two possible joystick locations -->
- <!--  <node pkg="joy" type="joy_node" name="joy_node0">
+  <node pkg="joy" type="joy_node" name="joy_node0">
     <param name="dev" value="/dev/input/by-id/usb-Logitech_G920_Driving_Force_Racing_Wheel_for_Xbox_One_00004ec005783d48-joystick"/>
-  </node> -->
+  </node>
   <!-- <node pkg="joy" type="joy_node" name="joy_node1">
     <param name="dev" value="/dev/input/js1"/>
   </node> -->
