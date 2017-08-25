@@ -14,8 +14,25 @@ from keras.models import Sequential, Model, load_model, model_from_json
 from keras.optimizers import Adam
 from keras.regularizers import l2
 from keras.callbacks import ModelCheckpoint 
+import keras.backend.tensorflow_backend as KTF
+import os
 
-dataPath =  "../../dataset/yaml_files/data_new.csv"
+dataPath =  "../../dataset/yaml_files/data_lcr.csv"
+
+GPU_FRACTION = 0.5
+
+def get_session(gpu_fraction=GPU_FRACTION):
+
+    num_threads = os.environ.get('OMP_NUM_THREADS')
+    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction)
+
+    if num_threads:
+        return tf.Session(config=tf.ConfigProto(
+            gpu_options=gpu_options, intra_op_parallelism_threads=num_threads))
+    else:
+        return tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
+
+KTF.set_session(get_session())
 
 def get_model():
 	model = Sequential([
@@ -59,8 +76,8 @@ def get_model():
 		Dense(1, activation='linear', init='he_normal')
 		])
 
-	model.compile(optimizer=Adam(0.00001), loss='mse')
-	model.load_weights('new_model2.h5')
+	model.compile(optimizer=Adam(0.0001), loss='mse')
+	model.load_weights('new_model_checkpoint_c.h5')
 	return model
 
 
@@ -73,24 +90,24 @@ if __name__=="__main__":
 
 	model = get_model()
 	model.summary()
-	filepath = "new_model_checkpoint.h5"
+	filepath = "new_model_checkpoint_c.h5"
 	checkpoint = ModelCheckpoint(filepath, monitor = "loss", verbose=1, save_best_only=True, mode='min')
 	callbacks_list = [checkpoint]
 	model.fit_generator(processimage.generate_batch(X_train, y_train), steps_per_epoch=200, 
-    					epochs=20,
+    					epochs=30,
     					verbose=1,
     					validation_data=processimage.generate_batch(X_validation, y_validation), 
-    					validation_steps=20,
+    					validation_steps=50,
     					callbacks = callbacks_list)
 
 	print ('Saving model weights and configuration file')
 
-	model.save_weights('new_model.h5')
-    # Save model architecture as json file
-	with open('new_model.json', 'w') as outfile:
-		json.dump(model.to_json(), outfile)
+	# model.save_weights('new_model_c.h5')
+ #    # Save model architecture as json file
+	# with open('new_model_c.json', 'w') as outfile:
+	# 	json.dump(model.to_json(), outfile)
 
-	with open('new_model_checkpoint.json', 'w') as outfile:
+	with open('new_model_checkpoint_c.json', 'w') as outfile:
 		json.dump(model.to_json(), outfile)
     # Explicitly end tensorflow session
 	from keras import backend as K 

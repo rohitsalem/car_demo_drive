@@ -10,7 +10,8 @@ import csv
 from scipy.stats import bernoulli
 
 
-imPath = '../../dataset/center/'
+imPath = '../../dataset/'
+dataPath =  "../../dataset/yaml_files/data_lcr.csv"
 BatchSize=64
 def resize_image(image):
 
@@ -42,7 +43,7 @@ def get_csv_data(file):
 	with open(file, 'r') as f:
 		reader = csv.reader(f)
 		next(reader, None)
-		for center_img, steering in reader:
+		for _, center_img, _, steering in reader:
 			angle = float(steering)
 			image_names.append(center_img.strip())
 			steering_angles.append(angle)
@@ -75,7 +76,7 @@ def fetch_images(X_train, y_train, batch_size):
 		else:
 			images_and_angles.append((image,angle))
 			count = count + 1
-
+		# print images_and_angles
 	return images_and_angles
 
 def generate_batch(X_train, y_train, batch_size=BatchSize):
