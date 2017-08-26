@@ -84,7 +84,7 @@ if __name__ == '__main__':
 	# weights_file = args.model.replace('json','h5')
 	# model.load_weights(weights_file)
 
-	MODEL_NAME = 'new_model2.json'
+	MODEL_NAME = 'new_model_checkpoint_c.json'
 	MODEL_PATH = os.path.join(os.path.dirname(sys.path[0]),'scripts', MODEL_NAME)
 	print MODEL_PATH
 	
