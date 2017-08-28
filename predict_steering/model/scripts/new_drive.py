@@ -23,7 +23,7 @@ from keras.models import model_from_json
 
 import keras.backend.tensorflow_backend as KTF
 
-GPU_FRACTION = 0.5
+GPU_FRACTION = 0.3
 
 def get_session(gpu_fraction=GPU_FRACTION):
     '''Assume that you have 6GB of GPU memory and want to allocate ~2GB'''
