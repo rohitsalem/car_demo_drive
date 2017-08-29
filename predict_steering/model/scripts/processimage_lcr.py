@@ -41,7 +41,7 @@ def get_csv_data(file):
 
 	image_names, steering_angles= [],[]
 
-	steering_offest = 0.1
+	steering_offest = 0.2
 
 
 	with open(file, 'r') as f:

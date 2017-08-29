@@ -8,7 +8,6 @@ import rospy
 import roslib
 import cv2
 import sys 
-import argparse
 import numpy as np 
 import os,sys
 from std_msgs.msg import Float32
@@ -70,19 +69,6 @@ class drive:
 
 if __name__ == '__main__':
 	
-	# parser = argparse.ArgumentParser(description="Remote Driving")
-	# parser.add_argument(
-	# 	'model' ,
-	# 	type=str ,
-	# 	help = 'Path to model h5 file and Model should be on the same path')
-	# args = parser.parse_args()
-
-	# with open(args.model, 'r') as jfile:
-	# 	model = model_from_json(json.loads(jfile.read()))
-
-	# model.compile("adam","mse")
-	# weights_file = args.model.replace('json','h5')
-	# model.load_weights(weights_file)
 
 	MODEL_NAME = 'new_model_checkpoint_c.json'
 	MODEL_PATH = os.path.join(os.path.dirname(sys.path[0]),'scripts', MODEL_NAME)
