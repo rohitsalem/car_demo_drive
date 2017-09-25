@@ -38,7 +38,8 @@ sudo nvidia-docker run -it \
   -v "/tmp/.X11-unix:/tmp/.X11-unix" \
   -v "/etc/localtime:/etc/localtime:ro" \
   -v "/dev/input:/dev/input" \
-  -v "/home/catkin_ws/src/car:/home/catkin_ws/src/car"\
+  -v "/home/rsalem/workspace/:/home/rsalem/workspace" \
   --privileged \
   --rm=true \
-  osrf/car_demo
+  rohitsalem/car
+
