@@ -3,12 +3,13 @@
 # Runs a docker container with the image created by build_demo.bash
 # Requires
 #   docker
-#   nvidia-docker 
+#   nvidia-docker
 #   an X server
 # Recommended
 #   A joystick mounted to /dev/input/js0 or /dev/input/js1
-
-until sudo nvidia-docker ps
+#
+WORKSPACE=/home/rsalem/workspace
+until nvidia-docker ps
 do
     echo "Waiting for docker server"
     sleep 1
@@ -30,7 +31,7 @@ then
     chmod a+r $XAUTH
 fi
 
-sudo nvidia-docker run -it \
+ nvidia-docker run -it   \
   -e DISPLAY \
   -e QT_X11_NO_MITSHM=1 \
   -e XAUTHORITY=$XAUTH \
@@ -38,8 +39,8 @@ sudo nvidia-docker run -it \
   -v "/tmp/.X11-unix:/tmp/.X11-unix" \
   -v "/etc/localtime:/etc/localtime:ro" \
   -v "/dev/input:/dev/input" \
-  -v "/home/rsalem/workspace/:/home/rsalem/workspace" \
+  -v "$WORKSPACE:$WORKSPACE" \
+  -w "$WORKSPACE" \
   --privileged \
   --rm=true \
   rohitsalem/car
-
