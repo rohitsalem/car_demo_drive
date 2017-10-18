@@ -337,7 +337,7 @@
   <joint name="left_camera_joint" type="fixed">
     <parent link="chassis"/>
     <child link="left_camera_link"/>
-    <origin xyz="1 -0.65 1.4" rpy="0 0.05 -1.5707"/>
+    <origin xyz="1 -0.65 1.4" rpy="0 0.05 -1.3007"/>
   </joint>
 
   <link name="right_camera_link">
@@ -349,7 +349,7 @@
   <joint name="right_camera_joint" type="fixed">
     <parent link="chassis"/>
     <child link="right_camera_link"/>
-    <origin xyz="-1 -0.65 1.4" rpy="0 0.05 -1.5707"/>
+    <origin xyz="-1 -0.65 1.4" rpy="0 0.05 -1.8407"/>
   </joint>
 
   <link name="back_left_far_sonar_link">
