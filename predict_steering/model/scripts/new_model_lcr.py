@@ -1,10 +1,11 @@
 #!/usr/bin/python
 
-import tensorflow as tf 
-import numpy as np 
-import processimage_lcr
+import os
 import json
 import h5py
+import numpy as np
+import tensorflow as tf
+import processimage_lcr
 
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
@@ -13,11 +14,13 @@ from keras.layers.convolutional import Conv2D, Cropping2D
 from keras.models import Sequential, Model, load_model, model_from_json
 from keras.optimizers import Adam
 from keras.regularizers import l2
-from keras.callbacks import ModelCheckpoint 
+from keras.callbacks import ModelCheckpoint
 import keras.backend.tensorflow_backend as KTF
-import os 
-dataPath =  "../../dataset/yaml_files/data_lcr.csv"
-GPU_FRACTION = 0.5
+
+dataPath = processimage_lcr.dataPath # import data path from processimage_lcr
+pre_trained_weights = 'new_model_checkpoint_lcr.h5'
+use_pre_trained_weights =  False
+GPU_FRACTION = 0.5   # Set the fraction of GPU you want to use for training.
 
 def get_session(gpu_fraction=GPU_FRACTION):
 
@@ -36,7 +39,7 @@ def get_model():
 	model = Sequential([
 	# Normalize image to -1.0 to 1.0
 		Lambda(processimage_lcr.normalize_image, input_shape=(66, 200, 3)),
-		# Convolutional layer 1 24@31x98 | 5x5 kernel | 2x2 stride | elu activation 
+		# Convolutional layer 1 24@31x98 | 5x5 kernel | 2x2 stride | elu activation
 		# Convolution2D(24, 5, 5, border_mode='valid', activation='elu', subsample=(2, 2), init='he_normal', W_regularizer=l2(0.001)),
 		Conv2D(24, (5,5),kernel_initializer ="he_normal", activation= 'elu', padding = 'valid', strides = (2,2), kernel_regularizer= l2(0.001)),
 		# Dropout with drop probability of .1 (keep probability of .9)
@@ -83,11 +86,11 @@ def get_model():
 		Dense(1,activation = 'linear', kernel_initializer ='he_normal')
 		])
 
-	model.compile(optimizer=Adam(0.0001), loss='mse')
-	# model.load_weights('new_model_checkpoint_lcr.h5')
-	return model
-
-
+        model.compile(optimizer=Adam(0.0001), loss='mse')
+        if (use_pre_trained_weights):
+            model.load_weights(pre_trained_weights)
+            print("Loaded Pre trained weights .... ")
+        return model
 
 if __name__=="__main__":
 
@@ -97,26 +100,26 @@ if __name__=="__main__":
 
 	model = get_model()
 	model.summary()
-	filepath = "new_model_checkpoint_lcr.h5"
+	filepath = pre_trained_weights
 	checkpoint = ModelCheckpoint(filepath, monitor = "loss", verbose=1, save_best_only=True, mode='min')
 	callbacks_list = [checkpoint]
-	model.fit_generator(processimage_lcr.generate_batch(X_train, y_train), steps_per_epoch=200, 
+	model.fit_generator(processimage_lcr.generate_batch(X_train, y_train), steps_per_epoch=200,
     					epochs=40,
     					verbose=1,
-    					validation_data=processimage_lcr.generate_batch(X_validation, y_validation), 
+    					validation_data=processimage_lcr.generate_batch(X_validation, y_validation),
     					validation_steps=50,
     					callbacks = callbacks_list)
 
 	print ('Saving model weights and configuration file')
 
 	# model.save_weights('new_model_lcr.h5')
- #    # Save model architecture as json file
+    # Save model architecture as json file
 	# with open('new_model_lcr.json', 'w') as outfile:
 	# 	json.dump(model.to_json(), outfile)
 
 	with open('new_model_checkpoint_lcr.json', 'w') as outfile:
 		json.dump(model.to_json(), outfile)
     # Explicitly end tensorflow session
-	from keras import backend as K 
+	from keras import backend as K
 
-	K.clear_session()	
+	K.clear_session()
