@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 import rospkg
 from bagutils import *
-import random 
+import random
 import string
 import csv
 
@@ -29,10 +29,8 @@ def get_outdir(base_dir, name):
 def write_image(bridge, outdir, msg, fmt='png'):
     results = {}
     random_name = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(10)])
-    image_filename = os.path.join(outdir, str(random_name) + '.' + fmt)
-    # image_filename = os.path.join(outdir, str(msg.header.stamp.to_nsec()) + '.' + fmt)
-
-
+    image_filename = os.path.join(outdir, str(random_name) + '.' + fmt) # File name is a random string
+    # image_filename = os.path.join(outdir, str(msg.header.stamp.to_nsec()) + '.' + fmt)           # Filename is the timestamp
     try:
         if hasattr(msg, 'format') and 'compressed' in msg.format:
             buf = np.ndarray(shape=(1, len(msg.data)), dtype=np.uint8, buffer=msg.data)
@@ -52,18 +50,19 @@ def write_image(bridge, outdir, msg, fmt='png'):
     return results
 
 
-def camera2dict(msg, write_results, camera_dict):
-    camera_dict["timestamp"].append(msg.header.stamp.to_nsec())
+def camera2dict(msg, write_results, camera_dict, camera_name):
+    if camera_name == "center":
+        camera_dict["timestamp"].append(msg.header.stamp.to_nsec())
     # camera_dict["width"].append(write_results['width'] if 'width' in write_results else msg.width)
     # camera_dict['height'].append(write_results['height'] if 'height' in write_results else msg.height)
     # camera_dict["frame_id"].append(msg.header.frame_id)
-    camera_dict["filename"].append(write_results['filename'])
+    camera_dict[camera_name].append(write_results['filename'])
 
 
 def steering2dict(msg, steering_dict):
     steering_dict["timestamp"].append(msg.header.stamp.to_nsec())
     steering_dict["angle"].append(msg.data)
-   
+
 def camera_select(topic, select_from):
 	if topic.startswith('/filtered/l'):
 		return select_from[0]
@@ -95,27 +94,20 @@ def main():
     RIGHT_IMAGE_TOPIC = "/filtered/right/image_raw"
     STEERING_TOPIC="/filtered/steering_angle"
 
-    # CAMERA_TOPICS=[LEFT_IMAGE_TOPIC , CENTER_IMAGE_TOPIC , RIGHT_IMAGE_TOPIC]
-# 
-    # CAMERA_TOPICS= "/filtered/right/image_raw" 
-# 
     filter_topics = [STEERING_TOPIC ,  LEFT_IMAGE_TOPIC , CENTER_IMAGE_TOPIC , RIGHT_IMAGE_TOPIC]
-    # print (filter_topics)
-  
+
     bagsets = find_bagsets(data_dir, filter_topics=filter_topics)
     for bs in bagsets:
         print("Processing set %s" % bs.name)
         sys.stdout.flush()
 
         dataset_outdir = os.path.join(data_dir, "%s" % bs.name)
-        
+
         left_outdir = get_outdir(data_dir,"left")
         center_outdir = get_outdir(data_dir, "center")
         right_outdir = get_outdir(data_dir, "right")
         yaml_outdir = get_outdir(data_dir, "yaml_files")
 
-        # camera_cols = ["timestamp", "width", "height", "frame_id", "filename"]
-        camera_cols = ["timestamp", "filename"]
         camera_dict_left = defaultdict(list)
         camera_dict_center = defaultdict(list)
         camera_dict_right = defaultdict(list)
@@ -133,43 +125,41 @@ def main():
                 outdir = left_outdir
                 if debug_print:
                     print("%s_camera %d" % (topic[1],timestamp))
-
                 results = write_image(bridge, outdir, msg, fmt=img_format)
                 head,tail = os.path.split(results['filename'])
                 results['filename']=tail
                 # results['filename'] = os.path.relpath(results['filename'], yaml_outdir)
-                camera2dict(msg, results, camera_dict_left)
+                camera2dict(msg, results, camera_dict_left,"left")
                 stats['img_count'] += 1
                 # stats['msg_count'] += 1
+
             if  (topic == CENTER_IMAGE_TOPIC):
                 outdir = center_outdir
                 if debug_print:
                     print("%s_camera %d" % (topic[1],timestamp))
-
                 results = write_image(bridge, outdir, msg, fmt=img_format)
                 head,tail = os.path.split(results['filename'])
                 results['filename']=tail
                 # results['filename'] = os.path.relpath(results['filename'], yaml_outdir)
-                camera2dict(msg, results, camera_dict_center)
+                camera2dict(msg, results, camera_dict_center,"center")
                 stats['img_count'] += 1
                 # stats['msg_count'] += 1
+
             if  (topic == RIGHT_IMAGE_TOPIC):
                 outdir = right_outdir
-
                 if debug_print:
                     print("%s_camera %d" % (topic[1],timestamp))
-
                 results = write_image(bridge, outdir, msg, fmt=img_format)
                 head,tail = os.path.split(results['filename'])
                 results['filename']=tail
                 # results['filename'] = os.path.relpath(results['filename'], yaml_outdir)
-                camera2dict(msg, results, camera_dict_right)
+                camera2dict(msg, results, camera_dict_right, "right")
                 stats['img_count'] += 1
                 # stats['msg_count'] += 1
+
             elif topic == STEERING_TOPIC:
                 if debug_print:
                    print("steering %d %f" % (timestamp, msg.data))
-
                 steering2dict(msg, steering_dict)
                 stats['msg_count'] += 1
 
@@ -188,23 +178,21 @@ def main():
         sys.stdout.flush()
 
         if include_images:
-            camera_csv_path = os.path.join(yaml_outdir, 'camera_left.csv')
-            camera_df = pd.DataFrame(data=camera_dict_left , columns=camera_cols)
-            camera_df.to_csv(camera_csv_path, index=False)
-            camera_csv_path = os.path.join(yaml_outdir, 'camera_center.csv')
-            camera_df = pd.DataFrame(data=camera_dict_center , columns=camera_cols)
-            camera_df.to_csv(camera_csv_path, index=False)
-            camera_csv_path = os.path.join(yaml_outdir, 'camera_right.csv')
-            camera_df = pd.DataFrame(data=camera_dict_right , columns=camera_cols)
-            camera_df.to_csv(camera_csv_path, index=False)
+            camera_center_df = pd.DataFrame(data=camera_dict_center , columns=["timestamp", "center"])
+            camera_left_df = pd.DataFrame(data=camera_dict_left , columns=["left"])
+            camera_right_df = pd.DataFrame(data=camera_dict_right , columns=["right"])
 
-
-
-        steering_csv_path = os.path.join(yaml_outdir, 'steering.csv')
         steering_df = pd.DataFrame(data=steering_dict, columns=steering_cols)
-        steering_df.to_csv(steering_csv_path, index=False)
+        data_df = pd.DataFrame(data=None , columns=[ "timestamp", "center", "left", "right", "angle"])
+        data_df['timestamp'] = camera_center_df['timestamp']
+        data_df['center'] = camera_center_df['center']
+        data_df['left'] = camera_left_df['left']
+        data_df['right'] = camera_right_df['right']
+        data_df['angle'] = steering_df['angle']
+        data_csv_path = os.path.join(yaml_outdir, 'data_lcr.csv')
+        data_df.to_csv(data_csv_path, index=False)
 
-        
+
 
 if __name__ == '__main__':
     main()

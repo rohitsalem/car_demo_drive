@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 import rospkg
 from bagutils import *
-import random 
+import random
 import string
 
 
@@ -53,16 +53,13 @@ def write_image(bridge, outdir, msg, fmt='png'):
 
 def camera2dict(msg, write_results, camera_dict):
     camera_dict["timestamp"].append(msg.header.stamp.to_nsec())
-    camera_dict["width"].append(write_results['width'] if 'width' in write_results else msg.width)
-    camera_dict['height'].append(write_results['height'] if 'height' in write_results else msg.height)
-    camera_dict["frame_id"].append(msg.header.frame_id)
-    camera_dict["filename"].append(write_results['filename'])
+    camera_dict["center"].append(write_results['filename'])
 
 
 def steering2dict(msg, steering_dict):
     steering_dict["timestamp"].append(msg.header.stamp.to_nsec())
     steering_dict["angle"].append(msg.data)
-   
+
 
 def main():
     #set rospack
@@ -83,7 +80,7 @@ def main():
     CAMERA_TOPICS="/filtered/center/image_raw"
 
     filter_topics = [STEERING_TOPIC , CAMERA_TOPICS]
-    
+
 
     bagsets = find_bagsets(data_dir, filter_topics=filter_topics)
     for bs in bagsets:
@@ -94,7 +91,7 @@ def main():
         center_outdir = get_outdir(data_dir, "center")
         yaml_outdir = get_outdir(data_dir, "yaml_files")
 
-        camera_cols = ["timestamp", "width", "height", "frame_id", "filename"]
+        camera_cols = ["timestamp", "center"]
         camera_dict = defaultdict(list)
 
         steering_cols = ["timestamp", "angle"]
@@ -112,7 +109,9 @@ def main():
                     print("%s_camera %d" % (topic[1],timestamp))
 
                 results = write_image(bridge, outdir, msg, fmt=img_format)
-                results['filename'] = os.path.relpath(results['filename'], yaml_outdir)
+                head,tail = os.path.split(results['filename'])
+                results['filename']=tail
+                # results['filename'] = os.path.relpath(results['filename'], yaml_outdir)
                 camera2dict(msg, results, camera_dict)
                 stats['img_count'] += 1
                 stats['msg_count'] += 1
@@ -138,52 +137,17 @@ def main():
         sys.stdout.flush()
 
         if include_images:
-            camera_csv_path = os.path.join(yaml_outdir, 'camera.csv')
             camera_df = pd.DataFrame(data=camera_dict, columns=camera_cols)
-            camera_df.to_csv(camera_csv_path, index=False)
-            # camera_steering_csv_path = os.path.join(yaml_outdir, 'camera_steering.csv')
-            # camera_steering_df = pd.DataFrame(data = camera_dict,steering_dict, columns = camera_cols,steering_cols)
-            # camera_steering_df.to_csv(camera_steering_csv_path, index=False)
+            steering_df = pd.DataFrame(data=steering_dict, columns=steering_cols)
+            data_df = pd.DataFrame(data=None , columns=[ "timestamp", "center", "angle"])
+            data_df["timestamp"] = camera_df["timestamp"]
+            data_df["center"] = camera_df["center"]
+            data_df["angle"] = steering_df["angle"]
+            data_csv_path = os.path.join(yaml_outdir, 'data_c.csv')
+            data_df.to_csv(data_csv_path, index=False)
 
 
-        steering_csv_path = os.path.join(yaml_outdir, 'steering.csv')
-        steering_df = pd.DataFrame(data=steering_dict, columns=steering_cols)
-        steering_df.to_csv(steering_csv_path, index=False)
 
-        
-        # if include_images and gen_interpolated:
-        #     # A little pandas magic to interpolate steering/gps samples to camera frames
-        #     camera_df['timestamp'] = pd.to_datetime(camera_df['timestamp'])
-        #     camera_df.set_index(['timestamp'], inplace=True)
-        #     camera_df.index.rename('index', inplace=True)
-        #     steering_df['timestamp'] = pd.to_datetime(steering_df['timestamp'])
-        #     steering_df.set_index(['timestamp'], inplace=True)
-        #     steering_df.index.rename('index', inplace=True)
-        #     # gps_df['timestamp'] = pd.to_datetime(gps_df['timestamp'])
-        #     # gps_df.set_index(['timestamp'], inplace=True)
-        #     # gps_df.index.rename('index', inplace=True)
-
-        #     merged = functools.reduce(lambda left, right: pd.merge(left, right, how='outer', left_index=True, right_index=True), [camera_df, steering_df])
-        #     merged.interpolate(method='time', inplace=True)
-
-        #     filtered_cols = ['timestamp', 'width', 'height', 'frame_id', 'filename']
-                             
-        #     filtered = merged.loc[camera_df.index]  # back to only camera rows
-        #     filtered.fillna(0.0, inplace=True)
-        #     filtered['timestamp'] = filtered.index.astype('int')  # add back original timestamp integer col
-        #     filtered['width'] = filtered['width'].astype('int')  # cast back to int
-        #     filtered['height'] = filtered['height'].astype('int')  # cast back to int
-        #     filtered = filtered[filtered_cols]  # filter and reorder columns for final output
-
-        #     interpolated_csv_path = os.path.join(yaml_outdir, 'final_interpolated.csv')
-        #     filtered.to_csv(interpolated_csv_path, header=True)
-
-        #     # process the images and generate the independent csv files for cameras
-        #     image_csv = pd.read_csv(interpolated_csv_path, sep=',', header=0)
-
-        #     center_csv = image_csv[image_csv['frame_id'] == 'camera_link']
-        #     c_outdir = os.path.join(yaml_outdir, 'center_camera_image.csv')
-        #     center_csv.to_csv(c_outdir, index=False, sep=',')
 
 if __name__ == '__main__':
     main()
