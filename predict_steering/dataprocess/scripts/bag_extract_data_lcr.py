@@ -185,14 +185,12 @@ def main():
         steering_df = pd.DataFrame(data=steering_dict, columns=steering_cols)
         data_df = pd.DataFrame(data=None , columns=[ "timestamp", "center", "left", "right", "angle"])
         data_df['timestamp'] = camera_center_df['timestamp']
-        data_df['center'] = camera_center_df['center']
-        data_df['left'] = camera_left_df['left']
-        data_df['right'] = camera_right_df['right']
+        data_df['center'] = "/center/"+camera_center_df['center']
+        data_df['left'] = "/left/"+camera_left_df['left']
+        data_df['right'] = "/right/"+camera_right_df['right']
         data_df['angle'] = steering_df['angle']
         data_csv_path = os.path.join(yaml_outdir, 'data_lcr.csv')
         data_df.to_csv(data_csv_path, index=False)
-
-
 
 if __name__ == '__main__':
     main()

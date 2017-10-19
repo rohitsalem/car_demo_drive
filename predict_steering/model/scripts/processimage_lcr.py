@@ -1,14 +1,12 @@
 #!/usr/bin/python
 ##Author: Rohit
-##Purpose: process images
+##Purpose: process images for center left and right images : in that order
 
-import cv2
-import numpy as np 
-import random
 import os
-import csv
-from scipy.stats import bernoulli
-
+import cv2
+import random
+import numpy as np
+import pandas as pd
 
 imPath = '../../dataset'
 dataPath =  "../../dataset/yaml_files/data_lcr.csv"
@@ -20,14 +18,13 @@ def resize_image(image):
 
 
 def normalize_image(image):
-	
-	return image/127.5 -1 
+
+	return image/127.5 -1
 
 
 def crop_image (image):
 
 	return image[140:-120,:]
-
 
 
 def process_image(image):
@@ -39,27 +36,20 @@ def process_image(image):
 
 def get_csv_data(file):
 
+	data = pd.read_csv(file)
 	image_names, steering_angles= [],[]
+	steering_offest = 0.27        # for left and right steering corrections
+	image_names = [list(data['center']), list(data['left']), list(data['right'])]
+	center_angles = list(data['angle'])
+	left_angles = []
+	for i in center_angles:
+		left_angles +=[i-0.27]
+ 	right_angles = []
+ 	for i in center_angles:
+ 		right_angles +=[i+0.27]
+	steering_angles = [center_angles,left_angles,right_angles]
 
-	steering_offest = 0.2
-
-
-	with open(file, 'r') as f:
-		reader = csv.reader(f)
-		next(reader, None)
-		for left_img, center_img, right_img, steering in reader:
-			angle = float(steering)
-			i =0
-
-			image_names.append([left_img.strip() , center_img.strip() , right_img.strip()])
-			steering_angles.append([angle - steering_offest, angle, angle + steering_offest])
-			# if i<100:
-			# 	print (angle)
-			# 	i = i+1
-			# 	print (steering_angles)
 	return image_names, steering_angles
-
-
 
 
 def fetch_images(X_train, y_train, batch_size):
@@ -69,7 +59,6 @@ def fetch_images(X_train, y_train, batch_size):
 	count = 0
 	zeros_count= 0
 	images_and_angles=[]
-	
 
 	while (count < batch_size):
 
@@ -111,13 +100,13 @@ def generate_batch(X_train, y_train, batch_size=BatchSize):
 
 		yield np.array(X_batch), np.array(y_batch)
 
-	
+
 
 # def show_processedimages():
 # 	images,angles = get_csv_data(dataPath)
 # 	id = np.random.randint(0,len(images))
 # 	print ("id: %d %f" %(id,angles[id][0]) )
-	
+
 # 	img = cv2.imread(imPath +str(images[id][0]))
 # 	img=process_image(img)
 # 	cv2.imshow("image" , img)
@@ -125,6 +114,4 @@ def generate_batch(X_train, y_train, batch_size=BatchSize):
 # 	cv2.destroyAllWindows()
 
 # if __name__=="__main__":
-# 	show_processedimages()	
-
-	
+# 	show_processedimages()

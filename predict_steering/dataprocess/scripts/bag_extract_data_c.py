@@ -141,13 +141,10 @@ def main():
             steering_df = pd.DataFrame(data=steering_dict, columns=steering_cols)
             data_df = pd.DataFrame(data=None , columns=[ "timestamp", "center", "angle"])
             data_df["timestamp"] = camera_df["timestamp"]
-            data_df["center"] = camera_df["center"]
+            data_df["center"] = "/center/"+camera_df["center"]
             data_df["angle"] = steering_df["angle"]
             data_csv_path = os.path.join(yaml_outdir, 'data_c.csv')
             data_df.to_csv(data_csv_path, index=False)
-
-
-
 
 if __name__ == '__main__':
     main()

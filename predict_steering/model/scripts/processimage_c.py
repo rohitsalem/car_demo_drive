@@ -1,17 +1,16 @@
 #!/usr/bin/python
 ##Author: Rohit
-##Purpose: process images
+##Purpose: process images only for center images
 
-import cv2
-import numpy as np 
-import random
 import os
-import csv
-from scipy.stats import bernoulli
+import cv2
+import random
+import numpy as np
+import pandas as pd
 
 
 imPath = '../../dataset/'
-dataPath =  "../../dataset/yaml_files/data_lcr.csv"
+dataPath =  "../../dataset/yaml_files/data_c.csv"
 BatchSize=64
 def resize_image(image):
 
@@ -19,14 +18,13 @@ def resize_image(image):
 
 
 def normalize_image(image):
-	
-	return image/127.5 -1 
+
+	return image/127.5 -1
 
 
 def crop_image (image):
 
 	return image[140:-120,:]
-
 
 
 def process_image(image):
@@ -38,18 +36,11 @@ def process_image(image):
 
 def get_csv_data(file):
 
+	data = pd.read_csv(file)
 	image_names, steering_angles= [],[]
-
-	with open(file, 'r') as f:
-		reader = csv.reader(f)
-		next(reader, None)
-		for _, center_img, _, steering in reader:
-			angle = float(steering)
-			image_names.append(center_img.strip())
-			steering_angles.append(angle)
+	image_names = list(data['center'])
+	steering_angles = list(data['angle'])
 	return image_names, steering_angles
-
-
 
 
 def fetch_images(X_train, y_train, batch_size):
@@ -59,7 +50,7 @@ def fetch_images(X_train, y_train, batch_size):
 	count = 0
 	zeros_count= 0
 	images_and_angles=[]
-	
+
 
 	while (count < batch_size):
 
@@ -100,17 +91,17 @@ def generate_batch(X_train, y_train, batch_size=BatchSize):
 
 		yield np.array(X_batch), np.array(y_batch)
 
-	
+
 
 # def show_processedimages():
 # 	images,angles = get_csv_data(dataPath)
 # 	id = np.random.randint(0,len(images))
 # 	print ("id: %d %f" %(id,angles[id]) )
-	
+
 # 	img = cv2.imread(imPath +str(images[id]))
 # 	img=process_image(img)
 # 	cv2.imshow("image" , img)
 # 	cv2.waitKey(0)
 # 	cv2.destroyAllWindows()
-
-	
+# if __name__=="__main__":
+# 	show_processedimages()
