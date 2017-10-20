@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import os
+import sys
 import json
 import h5py
 import numpy as np
@@ -18,7 +19,8 @@ from keras.callbacks import ModelCheckpoint
 import keras.backend.tensorflow_backend as KTF
 
 dataPath = processimage_lcr.dataPath # import data path from processimage_lcr
-pre_trained_weights = 'new_model_checkpoint_lcr.h5'
+weights_path = os.path.join(os.path.dirname(sys.path[0]),'weights')
+pre_trained_weights = weights_path + '/'+'new_model_checkpoint_lcr.h5'
 use_pre_trained_weights =  False
 GPU_FRACTION = 0.5   # Set the fraction of GPU you want to use for training.
 
