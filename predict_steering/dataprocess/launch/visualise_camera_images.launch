@@ -2,7 +2,7 @@
 
 <launch>
 
-  <node pkg="rosbag" type="play" name="rosbag_paly" output="screen" args="$(find dataset)/dataset.bag"/>
+  <node pkg="rosbag" type="play" name="rosbag_play" output="screen" args="$(find dataset)/dataset.bag"/>
 
   <!-- rviz -->
   <arg name="rviz"    default="true" />

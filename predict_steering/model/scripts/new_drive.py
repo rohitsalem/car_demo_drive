@@ -3,18 +3,18 @@
 ## Date: August 19, 2017
 ## Purpose: Drive node (inference)
 
-import tensorflow as tf 
+import tensorflow as tf
 import rospy
 import roslib
 import cv2
-import sys 
-import numpy as np 
+import sys
+import numpy as np
 import os,sys
 from std_msgs.msg import Float32
-from sensor_msgs.msg import Image 
+from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 
-import json 
+import json
 import h5py
 
 from keras.models import load_model
@@ -25,7 +25,6 @@ import keras.backend.tensorflow_backend as KTF
 GPU_FRACTION = 0.3
 
 def get_session(gpu_fraction=GPU_FRACTION):
-    '''Assume that you have 6GB of GPU memory and want to allocate ~2GB'''
 
     num_threads = os.environ.get('OMP_NUM_THREADS')
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_fraction)
@@ -45,7 +44,7 @@ class drive:
 		self.bridge = CvBridge()
 		self.sub = rospy.Subscriber ("/prius/front_camera/image_raw", Image, self.callback)
 		self.graph = []
-		self.graph.append(tf.get_default_graph())	
+		self.graph.append(tf.get_default_graph())
 
 	def callback (self,data):
 
@@ -68,10 +67,10 @@ class drive:
 
 
 if __name__ == '__main__':
-	
+
 
 	MODEL_NAME = 'new_model_checkpoint_c.json'
-	MODEL_PATH = os.path.join(os.path.dirname(sys.path[0]),'scripts', MODEL_NAME)
+	MODEL_PATH = os.path.join(os.path.dirname(sys.path[0]),'weights', MODEL_NAME)
 	print MODEL_PATH
 	
 	with open(MODEL_PATH, 'r') as jfile:
@@ -93,5 +92,3 @@ if __name__ == '__main__':
 
 	KTF.clear_session()
 	cv2.destroyAllWindows()
-
-
