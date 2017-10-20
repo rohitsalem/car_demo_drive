@@ -8,8 +8,20 @@ import random
 import numpy as np
 import pandas as pd
 
-imPath = '../../dataset'
-dataPath =  "../../dataset/yaml_files/data_lcr.csv"
+def get_my_path():
+    try:
+        filename = __file__ # where we were when the module was loaded
+    except NameError: # fallback
+        filename = inspect.getsourcefile(get_my_path)
+    return os.path.realpath(filename)
+
+# path to this script
+cm_path = get_my_path()
+# go 3 directory levels up
+sp_path = reduce(lambda x, f: f(x), [os.path.dirname]*3, cm_path)
+dataPath = os.path.join(sp_path, "dataset","yaml_files", "data_lcr.csv")
+imPath = os.path.join(sp_path, "dataset")
+
 BatchSize=64
 
 def resize_image(image):
