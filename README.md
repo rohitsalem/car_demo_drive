@@ -1,4 +1,4 @@
-# Demo of Prius in ROS/GAZEBO
+# Demo of Autonomous driving of Prius in ROS/GAZEBO
 
 This is a simulation of a Prius in [gazebo 8](http://gazebosim.org) with sensor data being published using [ROS kinetic](http://wiki.ros.org/kinetic/Installation)
 The car's throttle, brake, steering, and gear shifting are controlled by publishing a ROS message.
@@ -18,39 +18,18 @@ This demo has been tested on Ubuntu Xenial (16.04)
 * [Docker](https://www.docker.com/get-docker)
 * [nvidia-docker](https://github.com/NVIDIA/nvidia-docker/wiki/Installation)
 
-# Recommended
+# Running directly (inference)
+To have the car drive autonomously using the pre-trained weights, \
+RUN:  `roslaunch car_demo demo_drive.launch` This will load the Sonoma Raceway track and along with prius. Here the car will drive around the track by subscribing to `/steering_command` from the model prediction.   
 
-* A joystick
-* A joystick driver which creates links to `/dev/input/js0` or `/dev/input/js1`
-
-# Building
-
-First clone the repo, then run the script `build_demo.bash`.
-It builds a docker image with the local source code inside.
-
+# Steps for training and testing new models: 
+## Using the front three cameras of the car: Center, left and right for data collection:
+**Recording Bag Files**
+- RUN `roslaunch car_demo demo_record.launch` 
+- Open a terminal and navigate to `car/predict_steering/dataset`, Here we store all the data required for training, (i.e images and the csv files) and RUN: 
 ```
-$ cd car_demo
-$ ./build_demo.bash
+rosbag record /filtered/steering_angle /filtered/center/image_raw /filtered/left/image_raw /filtered/right/image_raw 
 ```
+- Start driving the car using `WASD` or a joystick. 
 
-# Running
-
-Connect a game controller to your PC.
-Use the script `run_demo.bash` to run the demo.
-
-```
-$ ./run_demo.bash
-```
-An [RVIZ](http://wiki.ros.org/rviz) window will open showing the car and sensor output.
-A gazebo window will appear showing the simulation.
-Either use the controller to drive the prius around the world, or click on the gazebo window and use the `WASD` keys to drive the car.
-
-If using a Logitech F710 controller:
-
-* Make sure the MODE status light is off
-* Set the swtich to XInput mode
-* The right stick controls throttle and brake
-* The left stick controls steering
-* Y puts the car into DRIVE
-* A puts the car into REVERSE
-* B puts the car into NEUTRAL
+ 
