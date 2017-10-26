@@ -293,9 +293,9 @@ namespace gazebo
     public: ros::NodeHandle nh;
 
     public: ros::Subscriber controlSub;
-	
+
 	  public: ros::Publisher  steeranglePub;
-    
+
     public: prius_msgs::SteeringAngle steering_angle;
 
      /// \brief A ROS callbackqueue that helps process messages
@@ -336,10 +336,10 @@ void PriusHybridPlugin::OnPriusCommand(const prius_msgs::Control::ConstPtr &msg)
   this->dataPtr->lastPedalCmdTime = this->dataPtr->world->SimTime();
 
   // Steering wheel command
-  double handWheelRange =
-    this->dataPtr->handWheelHigh - this->dataPtr->handWheelLow;
+  double handCmd = (msg->steer < 0.)
+    ? (msg->steer * -this->dataPtr->handWheelLow)
+    : (msg->steer * this->dataPtr->handWheelHigh);
 
-  double handCmd = msg->steer * handWheelRange;
   handCmd = ignition::math::clamp(handCmd, this->dataPtr->handWheelLow,
       this->dataPtr->handWheelHigh);
   this->dataPtr->handWheelCmd = handCmd;
@@ -689,7 +689,7 @@ void PriusHybridPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
   this->dataPtr->node.Subscribe("/keypress", &PriusHybridPlugin::OnKeyPressIgn,
       this);
-   
+
   ros::SubscribeOptions so=
             ros::SubscribeOptions::create<std_msgs::Float32>(
                 "/steering_command",
@@ -700,7 +700,7 @@ void PriusHybridPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
   this->dataPtr->rosQueueThread= std::thread(std::bind (&PriusHybridPlugin::QueueThread,this));
 
-   
+
 }
 
 void PriusHybridPlugin::OnRosSteerCmd(const std_msgs::Float32ConstPtr &_msg)
@@ -1053,7 +1053,7 @@ void PriusHybridPlugin::Update()
   dPtr->chassisLinearVelocity = dPtr->chassisLink->WorldCoGLinearVel();
   // Convert meter/sec to miles/hour
   double linearVel = dPtr->chassisLinearVelocity.Length() * 2.23694;
-  
+
   double actualvelocity= sqrt(dPtr->chassisLinearVelocity[0]*dPtr->chassisLinearVelocity[0] + dPtr->chassisLinearVelocity[1]*dPtr->chassisLinearVelocity[1]);
   // std::cout << " linear velocity of the car is " << sqrt(velocity)  << std::endl;
   // Distance traveled in miles.
@@ -1067,7 +1067,7 @@ void PriusHybridPlugin::Update()
   //PID for the constant vel
   double velocityError= actualvelocity -desiredvelocity;
 
-  this->dataPtr->gasPedalPercent=this->dataPtr->cruizepPID.Update(velocityError,dt);
+  // this->dataPtr->gasPedalPercent=this->dataPtr->cruizepPID.Update(velocityError,dt);
 
   // std::cout<<" Velocity : " << actualvelocity << std::endl;
 
@@ -1203,9 +1203,9 @@ void PriusHybridPlugin::Update()
   }
 
   brakePercent = ignition::math::clamp(brakePercent, 0.0, 1.0);
-  dPtr->flWheelJoint->SetParam("friction", 0,
+  dPtr->flWheelJoint->SetParam("friction", 1,
       dPtr->flJointFriction + brakePercent * dPtr->frontBrakeTorque);
-  dPtr->frWheelJoint->SetParam("friction", 0,
+  dPtr->frWheelJoint->SetParam("friction", 1,
       dPtr->frJointFriction + brakePercent * dPtr->frontBrakeTorque);
   dPtr->blWheelJoint->SetParam("friction", 0,
       dPtr->blJointFriction + brakePercent * dPtr->backBrakeTorque);
