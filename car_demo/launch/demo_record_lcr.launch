@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="model" default="$(find prius_description)/urdf/prius.urdf"/>
-  <arg name="rvizconfig" default="$(find car_demo)/rviz/demo_tf_detect.rviz" />
+  <arg name="rvizconfig" default="$(find car_demo)/rviz/demo_drive.rviz" />
 
   <param name="robot_description" textfile="$(arg model)"/>
 
@@ -24,9 +24,9 @@
   <!-- <node pkg="joy" type="joy_node" name="joy_node0"> -->
     <!-- <param name="dev" value="/dev/input/by-id/usb-Logitech_G920_Driving_Force_Racing_Wheel_for_Xbox_One_00004ec005783d48-joystick"/> -->
   <!-- </node> -->
-  <!-- <node pkg="joy" type="joy_node" name="joy_node1"> -->
-    <!-- <param name="dev" value="/dev/input/js1"/> -->
-  <!-- </node> -->
+  <node pkg="joy" type="joy_node" name="joy_node1">
+    <param name="dev" value="/dev/input/js1"/>
+  </node>
   <node pkg="joy" type="joy_node" name="joy_node2">
     <param name="dev" value="/dev/input/js0"/>
   </node>
@@ -34,7 +34,7 @@
 
   <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -x 94.38 -y -309.710 -z 7.5 -R 0 -P 0 -Y 1.579425 -model prius"/>
 
-  <node name= "detect_ros" pkg="tf_object_detect" type="detect_ros.py" output="screen"/>
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
-  
+  <node name = "messagefilter_lcr_node" pkg = "dataprocess" type="messagefilter_lcr_node" output="screen" />
+
 </launch>
