@@ -35,7 +35,7 @@ This will save the rosbag file with images from the center front facing camera o
 **Inference (testing on the car)**
 - RUN `roslaunch car_demo demo_drive.launch` to test the model on the car. 
 
-## Using the three front facing of the car: Center, left and right for training:
+## Using the three front facing cameras of the car: Center, left and right for training:
 **Recording Bag Files and data generation**
 - RUN `roslaunch car_demo demo_record_lcr.launch` 
 - Open a terminal and navigate to `car/predict_steering/dataset`, Here we store all the data required for training, (i.e images and the csv files) and RUN: 
