@@ -27,14 +27,14 @@
   <!-- <node pkg="joy" type="joy_node" name="joy_node1"> -->
     <!-- <param name="dev" value="/dev/input/js1"/> -->
   <!-- </node> -->
-  <node pkg="joy" type="joy_node" name="joy_node2">
+  <!-- <node pkg="joy" type="joy_node" name="joy_node2">
     <param name="dev" value="/dev/input/js0"/>
-  </node>
+  </node> -->
 
 
   <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -x 94.38 -y -309.710 -z 7.5 -R 0 -P 0 -Y 1.579425 -model prius"/>
-  
-  <node name="new_drive" pkg="model" type="new_drive.py" output="screen"/>
+
+  <node name="new_drive" pkg="model" type="drive.py" output="screen"/>
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
-  
+
 </launch>
