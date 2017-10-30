@@ -287,6 +287,7 @@ namespace gazebo
     /// \brief Keyboard control type
     public: int keyControl = 1;
 
+    public: bool cruize_control;
     /// \brief Publisher for the world_control topic.
     public: transport::PublisherPtr worldControlPub;
 
@@ -605,6 +606,14 @@ void PriusHybridPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     this->dataPtr->frWheelSteeringPID.SetDGain(_sdf->Get<double>(paramName));
   else
     this->dataPtr->frWheelSteeringPID.SetDGain(paramDefault);
+
+  this->UpdateHandWheelRatio();
+
+  paramName = "cruize_control";
+  if (_sdf->HasElement(paramName))
+    this->dataPtr->cruize_control = (_sdf->Get<bool>(paramName));
+  else
+    this->dataPtr->cruize_control = false;
 
   this->UpdateHandWheelRatio();
 
@@ -1067,8 +1076,11 @@ void PriusHybridPlugin::Update()
   //PID for the constant vel
   double velocityError= actualvelocity -desiredvelocity;
 
+  // turn on cruize_control
+  if (this->dataPtr->cruize_control)
+  {
   this->dataPtr->gasPedalPercent=this->dataPtr->cruizepPID.Update(velocityError,dt);
-
+  }
   // std::cout<<" Velocity : " << actualvelocity << std::endl;
 
   // Aero-dynamic drag on chassis

@@ -107,7 +107,7 @@ catkin_package(
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
 )
-catkin_install_python(PROGRAMS scripts/new_drive.py 
+catkin_install_python(PROGRAMS scripts/drive.py 
 			DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 ###########
 ## Build ##
