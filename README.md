@@ -10,7 +10,7 @@ This demo has been tested on Ubuntu Xenial (16.04)
 
 * An X server
 * [Docker](https://www.docker.com/get-docker)
-* [nvidia-docker](https://github.com/NVIDIA/nvidia-docker/wiki/Installation)
+* [nvidia-docker](https://github.com/nvidia/nvidia-docker/wiki/Installation-(version-1.0))
 
 # Running directly (inference)
 To have the car drive autonomously using the pre-trained weights, \
