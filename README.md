@@ -14,11 +14,13 @@ This demo has been tested on Ubuntu Xenial (16.04)
 
 # Running directly (inference)
 To have the car drive autonomously using the pre-trained weights, \
+Make sure the cruize_control flag is set to `true` [here](https://github.com/rohitsalem/car_demo_drive/blob/master/prius_description/urdf/prius.urdf#L453). This allows the car to drive at a constant velocity.\
 RUN:  `roslaunch car_demo demo_drive.launch` This will load the Sonoma Raceway track and along with prius. Here the car will drive around the track by subscribing to `/steering_command` from the model prediction.   
 
 # Steps for training and testing new models: 
 ## Using only the front facing Center camera for training:
 **Recording Bag Files and data generation**
+- Make sure the cruize_control flag is set to `false` [here](https://github.com/rohitsalem/car_demo_drive/blob/master/prius_description/urdf/prius.urdf#L453).
 - RUN `roslaunch car_demo demo_record_center.launch` 
 - Open a terminal and navigate to `car/predict_steering/dataset`, Here we store all the data required for training, (i.e images and the csv files) and RUN: 
 ```
