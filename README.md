@@ -24,7 +24,7 @@ RUN:  `roslaunch car_demo demo_drive.launch` This will load the Sonoma Raceway t
 - RUN `roslaunch car_demo demo_record_center.launch` 
 - Open a terminal and navigate to `car/predict_steering/dataset`, Here we store all the data required for training, (i.e images and the csv files) and RUN: 
 ```
-rosbag record /filtered/steering_angle /filtered/center/image_raw 
+rosbag record /filtered/steering_angle /filtered/image_raw 
 ```
 This will save the rosbag file with images from the center front facing camera on the car along with the corresponding steering angle. 
 - Start driving the car using `WASD` or a joystick. End the recording of rosbag file when you have traversed enough in the track. Record more rosbag files (traversing the same track 4-5 times), this will allow enough data for training. 
